@@ -1,0 +1,39 @@
+@import 'tailwindcss';
+
+/* ─────────────────────────────────────────────────────────────
+   Base da página.
+
+   Veio da vitrine, menos os temas e o modo escuro, que eram dela. A
+   proposta tem as cores da casa e é só clara — então o navegador
+   também desenha os campos nativos (data, lista) no claro.
+   ───────────────────────────────────────────────────────────── */
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: light;
+}
+
+/* Quem chega por âncora não pode ter o título escondido atrás do
+   cabeçalho fixo. */
+[id] {
+  scroll-margin-top: 5rem;
+}
+
+:focus-visible {
+  outline: 2px solid #7b1e2b;
+  outline-offset: 2px;
+}
+
+/* Respeita quem pediu menos movimento no sistema. Não é detalhe de
+   acessibilidade opcional: animação de entrada dá enjoo em quem tem
+   sensibilidade vestibular. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

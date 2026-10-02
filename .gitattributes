@@ -1,0 +1,12 @@
+# Normaliza a quebra de linha no histórico.
+#
+# O Windows escreve CRLF e o Git avisa em cada `add` que vai converter.
+# Fixar LF no repositório acaba com o aviso e evita que um arquivo
+# inteiro apareça como modificado só por ter sido salvo noutro editor.
+* text=auto eol=lf
+
+# Binários: nunca converter.
+*.ico binary
+*.png binary
+*.jpg binary
+*.webp binary
