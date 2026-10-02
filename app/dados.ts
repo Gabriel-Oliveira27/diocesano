@@ -1,6 +1,6 @@
 import type { Destaque } from './_pecas/Galeria';
 import type { Grupo } from './_pecas/Regulamento';
-import type { Apartamento } from './_pecas/Reserva';
+import type { Quarto } from './_pecas/Reserva';
 import type { Espaco } from './_pecas/Orcamento';
 import type { Linha } from './_pecas/ComoChegar';
 import type { DadosRodape } from './_pecas/Rodape';
@@ -58,10 +58,10 @@ export const tema: Tema = {
 };
 
 /**
- * Os quatro apartamentos, com o que cada página do site antigo dizia
+ * Os quatro quartos, com o que cada página do site antigo dizia
  * que ele tem — todos com ar central, Wi-Fi e café da manhã.
  */
-export const quartos: (Apartamento & {
+export const quartos: (Quarto & {
   resumo: string;
   itens: { icone: NomeIcone; texto: string }[];
   destaque?: boolean;
@@ -129,7 +129,7 @@ export const destaques: Destaque[] = [
   { icone: 'cafe', titulo: 'Café da manhã', texto: 'Buffet incluso na diária, das 6h às 9h30.' },
   { icone: 'piscina', titulo: 'Piscinas', texto: 'Só para hóspedes, das 7h às 22h.' },
   { icone: 'capela', titulo: 'Capela São José', texto: 'Dentro do complexo.' },
-  { icone: 'wifi', titulo: 'Ar central e Wi-Fi', texto: 'Em todos os apartamentos.' },
+  { icone: 'wifi', titulo: 'Ar central e Wi-Fi', texto: 'Em todos os quartos.' },
   { icone: 'microfone', titulo: 'Auditório para 450', texto: 'Para congresso, curso e encontro.' },
 ];
 
@@ -150,8 +150,8 @@ export const galeria: Foto[] = [
   },
   {
     src: '/apartamento.jpg',
-    alt: 'Apartamento com duas camas de solteiro, TV, frigobar e mesa de trabalho',
-    titulo: 'Um dos apartamentos',
+    alt: 'Quarto com duas camas de solteiro, TV, frigobar e mesa de trabalho',
+    titulo: 'Um dos quartos',
   },
 ];
 
@@ -275,8 +275,8 @@ export const regulamento: Grupo[] = [
     icone: 'pessoas',
     titulo: 'Visitas e silêncio',
     itens: [
-      'Visitas são recebidas nas áreas comuns — lobby e restaurante. Subir ao apartamento só com autorização e registro na recepção, com taxa extra.',
-      'Depois das 22h, silêncio nos apartamentos e TV em volume moderado.',
+      'Visitas são recebidas nas áreas comuns — lobby e restaurante. Subir ao quarto só com autorização e registro na recepção, com taxa extra.',
+      'Depois das 22h, silêncio nos quartos e TV em volume moderado.',
     ],
   },
   {
@@ -290,12 +290,12 @@ export const regulamento: Grupo[] = [
   },
   {
     icone: 'frigobar',
-    titulo: 'No apartamento',
+    titulo: 'No quarto',
     itens: [
-      'Lavar e passar roupa é com a recepção, não no apartamento.',
+      'Lavar e passar roupa é com a recepção, não no quarto.',
       'Para abastecer o frigobar, fale com a recepção ou ligue no ramal 200.',
       'Limpeza: use a placa na porta ou avise a recepção.',
-      'A senha do Wi-Fi está nas placas do hotel e dos apartamentos, ou com a recepção.',
+      'A senha do Wi-Fi está nas placas do hotel e dos quartos, ou com a recepção.',
       'Dano ou extravio de objetos do hotel é cobrado na conta do hóspede.',
     ],
   },
@@ -304,7 +304,7 @@ export const regulamento: Grupo[] = [
     titulo: 'Bom saber',
     itens: [
       'Voltagem 220V.',
-      'Apartamento quádruplo e criança de 5 a 10 anos: R$ 40 adicionais por diária.',
+      'Quarto quádruplo e criança de 5 a 10 anos: R$ 40 adicionais por diária.',
       'Pet: R$ 25 por diária.',
       'Roupas e objetos esquecidos ficam guardados por 90 dias.',
     ],
@@ -320,7 +320,7 @@ export const rodape: DadosRodape = {
   observacoes: ['Diárias do meio-dia ao meio-dia, com café da manhã.'],
   contatos,
   atalhos: [
-    ['#quartos', 'Apartamentos e diárias'],
+    ['#quartos', 'Quartos e diárias'],
     ['#reservas', 'Reservas'],
     ['#eventos', 'Eventos e auditórios'],
     ['#historia', 'História'],

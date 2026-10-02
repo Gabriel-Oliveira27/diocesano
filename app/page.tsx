@@ -72,9 +72,9 @@ function Titulo({ sobre, children, claro = false }: { sobre: string; children: R
 
 export default function PropostaDiocesano() {
   useRevelar();
-  // O apartamento escolhido mora aqui, e não na reserva: o "Reservar"
+  // O quarto escolhido mora aqui, e não na reserva: o "Reservar"
   // de cada cartão leva até o formulário com ele já marcado.
-  const [apto, setApto] = useState(quartos[0].slug);
+  const [quarto, setQuarto] = useState(quartos[0].slug);
 
   return (
     <div style={variaveis(tema)} className="bg-[var(--fundo)] text-[var(--tinta)]">
@@ -88,7 +88,7 @@ export default function PropostaDiocesano() {
 
           <nav className="ml-auto hidden gap-6 text-sm lg:flex">
             {[
-              ['#quartos', 'Apartamentos'],
+              ['#quartos', 'Quartos'],
               ['#hotel', 'O hotel'],
               ['#eventos', 'Eventos'],
               ['#historia', 'História'],
@@ -157,7 +157,7 @@ export default function PropostaDiocesano() {
                 className="inline-flex items-center gap-2 border border-white/30 px-6 py-3.5 font-semibold transition-colors hover:border-white/70"
               >
                 <I.cama className="size-4" />
-                Ver apartamentos
+                Ver quartos
               </a>
             </div>
 
@@ -229,11 +229,11 @@ export default function PropostaDiocesano() {
         </ParaOHotel>
       </div>
 
-      {/* ── Apartamentos ─────────────────────────────────────
+      {/* ── Quartos ──────────────────────────────────────────
           Os preços em TEXTO. No site eles viviam dentro de um JPEG. */}
       <section id="quartos" className="mx-auto max-w-6xl scroll-mt-28 px-5 py-16">
         <div className="flex flex-wrap items-end justify-between gap-4">
-          <Titulo sobre="Apartamentos">Quatro jeitos de ficar.</Titulo>
+          <Titulo sobre="Quartos">Quatro jeitos de ficar.</Titulo>
           <p data-revelar className="max-w-sm text-[var(--tinta-media)]">
             Todos com ar central, Wi-Fi e café da manhã incluso. A diária vai do meio-dia ao meio-dia.
           </p>
@@ -293,7 +293,7 @@ export default function PropostaDiocesano() {
                 ))}
                 <a
                   href="#reservas"
-                  onClick={() => setApto(q.slug)}
+                  onClick={() => setQuarto(q.slug)}
                   className="ml-auto inline-flex items-center gap-2 border border-[var(--marca)] px-4 py-2.5 text-sm font-semibold text-[var(--marca)] transition-colors hover:bg-[var(--marca)] hover:text-white"
                 >
                   <I.calendario className="size-4" />
@@ -307,7 +307,7 @@ export default function PropostaDiocesano() {
         <p data-revelar className="mt-5 flex flex-wrap gap-x-8 gap-y-2 text-sm text-[var(--tinta-media)]">
           <span className="flex items-center gap-2">
             <I.balao className="size-4 text-[var(--marca)]" />
-            Apartamento quádruplo e criança de 5 a 10 anos: + {real(adicionais.criancaOuQuadruplo)} por diária
+            Quarto quádruplo e criança de 5 a 10 anos: + {real(adicionais.criancaOuQuadruplo)} por diária
           </span>
           <span className="flex items-center gap-2">
             <I.pata className="size-4 text-[var(--marca)]" />
@@ -335,7 +335,7 @@ export default function PropostaDiocesano() {
         <div className="mx-auto max-w-6xl px-5 py-16">
           <Titulo sobre="Reservas">Verifique a disponibilidade.</Titulo>
           <p data-revelar className="mt-3 max-w-2xl text-lg text-[var(--tinta-media)]">
-            Escolha as datas e o apartamento. O pedido chega completo no WhatsApp da recepção, já com o
+            Escolha as datas e o quarto. O pedido chega completo no WhatsApp da recepção, já com o
             valor pela tabela, e a confirmação volta por lá.
           </p>
 
@@ -343,9 +343,9 @@ export default function PropostaDiocesano() {
             <Reserva
               hotel={hotel.nome}
               numeroWhatsApp={hotel.whatsapp}
-              apartamentos={quartos}
-              escolhido={apto}
-              escolhe={setApto}
+              quartos={quartos}
+              escolhido={quarto}
+              escolhe={setQuarto}
               adicional={adicionais.criancaOuQuadruplo}
               pet={adicionais.pet}
             />
@@ -379,7 +379,7 @@ export default function PropostaDiocesano() {
               de cem miniaturas.
             </p>
             <p>
-              As de <b>apartamento</b> são o ponto fraco — e são justamente as que decidem uma reserva. Uma
+              As de <b>quarto</b> são o ponto fraco — e são justamente as que decidem uma reserva. Uma
               manhã de fotos com a cama arrumada, a cortina aberta e luz natural resolve. E, se houver as
               originais em tamanho maior (as do site têm 640 pixels de largura), a página inteira fica
               mais nítida.
@@ -446,7 +446,7 @@ export default function PropostaDiocesano() {
           <div className="mt-10">
             <ParaOHotel titulo="Hospedagem e eventos, cada um no seu lugar">
               <p>
-                No site, cada auditório era uma página no mesmo menu dos apartamentos. Quem procura
+                No site, cada auditório era uma página no mesmo menu dos quartos. Quem procura
                 auditório para um congresso não é quem procura cama: aqui os eventos têm faixa e pedido de
                 orçamento próprios, e o pedido chega com espaço, data, pessoas, horas e se vai precisar de
                 hospedagem — que é onde as duas frentes do hotel se encontram.

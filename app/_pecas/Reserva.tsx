@@ -6,7 +6,7 @@ import { dataCurta, diasEntre, somaDias, useHoje } from './datas';
 import { I } from './Icones';
 import { real, whatsapp } from './tipos';
 
-export type Apartamento = { slug: string; nome: string; individual: number; duplo: number };
+export type Quarto = { slug: string; nome: string; individual: number; duplo: number };
 
 type Ocupacao = 'individual' | 'duplo';
 
@@ -14,8 +14,8 @@ type Ocupacao = 'individual' | 'duplo';
  * O pedido de reserva vira uma mensagem completa no WhatsApp da recepção.
  *
  * Hoje reservar é ligar ou mandar "boa tarde, tem vaga?" e esperar a
- * recepção perguntar a data, o apartamento, quantas pessoas. Aqui a
- * primeira mensagem já chega com entrada, saída, apartamento, ocupação,
+ * recepção perguntar a data, o quarto, quantas pessoas. Aqui a
+ * primeira mensagem já chega com entrada, saída, quarto, ocupação,
  * criança e pet — e com o valor pela tabela, para o hóspede saber antes
  * de perguntar e a recepção não precisar fazer a conta.
  *
@@ -25,7 +25,7 @@ type Ocupacao = 'individual' | 'duplo';
 export default function Reserva({
   hotel,
   numeroWhatsApp,
-  apartamentos,
+  quartos,
   escolhido,
   escolhe,
   adicional,
@@ -33,8 +33,8 @@ export default function Reserva({
 }: {
   hotel: string;
   numeroWhatsApp: string;
-  apartamentos: Apartamento[];
-  /** O apartamento vem de fora: o "Reservar" de cada cartão já chega aqui escolhido. */
+  quartos: Quarto[];
+  /** O quarto vem de fora: o "Reservar" de cada cartão já chega aqui escolhido. */
   escolhido: string;
   escolhe: (slug: string) => void;
   /** Por diária, para criança de 5 a 10 anos. */
@@ -59,8 +59,8 @@ export default function Reserva({
   const saida = saidaEscolhida && saidaEscolhida >= saidaMin ? saidaEscolhida : saidaMin;
   const diarias = entrada ? diasEntre(entrada, saida) : 0;
 
-  const apto = apartamentos.find((a) => a.slug === escolhido) ?? apartamentos[0];
-  const diaria = apto[ocupacao];
+  const quarto = quartos.find((q) => q.slug === escolhido) ?? quartos[0];
+  const diaria = quarto[ocupacao];
   const linhas = [
     { texto: `${diarias} ${diarias === 1 ? 'diária' : 'diárias'} × ${real(diaria)}`, valor: diarias * diaria },
     criancas > 0 && {
@@ -77,7 +77,7 @@ export default function Reserva({
         '',
         `Entrada: ${dataCurta(entrada)}`,
         `Saída: ${dataCurta(saida)} (${diarias} ${diarias === 1 ? 'diária' : 'diárias'})`,
-        `Apartamento: ${apto.nome}, ${ocupacao}`,
+        `Quarto: ${quarto.nome}, ${ocupacao}`,
         criancas > 0 ? `Crianças de 5 a 10 anos: ${criancas}` : false,
         comPet ? 'Vou levar um pet.' : false,
         `Pela tabela do site: ${real(total)}`,
@@ -136,11 +136,11 @@ export default function Reserva({
 
         <div>
           <span className={rotulo}>
-            <I.cama className="size-3.5" /> Apartamento
+            <I.cama className="size-3.5" /> Quarto
           </span>
           <div className="mt-2 grid gap-2 sm:grid-cols-2">
-            {apartamentos.map((a) => {
-              const ativo = a.slug === apto.slug;
+            {quartos.map((a) => {
+              const ativo = a.slug === quarto.slug;
               return (
                 <button
                   key={a.slug}
