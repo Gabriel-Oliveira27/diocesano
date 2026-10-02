@@ -3,8 +3,8 @@
  *
  * Some quando o site for para valer. Existe porque os achados do
  * levantamento são o argumento — o regulamento na entrada, as diárias
- * dentro de um JPEG, o site fora do ar — e escondê-los numa conversa
- * separada seria jogar fora a parte que convence.
+ * dentro de um JPEG, a foto de quarto que não ajuda — e escondê-los numa
+ * conversa separada seria jogar fora a parte que convence.
  */
 export default function ParaOHotel({ titulo, children }: { titulo: string; children: React.ReactNode }) {
   return (

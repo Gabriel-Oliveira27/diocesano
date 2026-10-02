@@ -215,17 +215,16 @@ export default function PropostaDiocesano() {
       </section>
 
       <div className="mx-auto max-w-6xl px-5 pt-14">
-        <ParaOHotel titulo="Hoje, quem abre o site de vocês encontra “Site suspenso”">
+        <ParaOHotel titulo="A página inicial do site de vocês abre com o regulamento">
           <p>
-            Quando terminei esta página, em 1º de outubro de 2026, o endereço <b>diocesanohotel.com.br</b>{' '}
-            — e cada foto dele — abria uma página da empresa de hospedagem:{' '}
-            <b>“Este site está suspenso temporariamente”</b>. Pode ser só uma pendência com a hospedagem;
-            mas, enquanto durar, é isso que aparece para quem procura o hotel no Google.
+            Em <b>diocesanohotel.com.br</b>, depois do carrossel e da caixa de disponibilidade, o texto da
+            página inicial é o regulamento interno — com{' '}
+            <b>“é expressamente proibido lavar e passar roupa nos apartamentos”</b> em caixa alta. Quem
+            chega ao site lê as regras antes de conhecer o hotel.
           </p>
           <p>
-            Não foi a primeira vez: o Arquivo da Internet guardou essa mesma página de suspensão em março
-            de 2022. Nada do conteúdo se perdeu — diárias, apartamentos, auditórios, história e
-            regulamento estão todos aqui, conferidos com a última versão salva do site.
+            Aqui a abertura recebe: o que é a casa, onde fica, quanto custa e como reservar. As regras
+            continuam todas no fim da página, organizadas por assunto.
           </p>
         </ParaOHotel>
       </div>
@@ -522,12 +521,11 @@ export default function PropostaDiocesano() {
             <Regulamento grupos={regulamento} />
           </div>
 
-          <ParaOHotel titulo="O regulamento continua — depois do convite">
+          <ParaOHotel titulo="O regulamento continua inteiro — no lugar dele">
             <p>
-              No site, o texto principal da página de entrada era o regulamento interno, com “é
-              expressamente proibido lavar e passar roupa nos apartamentos” em caixa alta. Aqui ele está
-              inteiro, organizado por assunto e no tom de quem recebe — mas no fim da página. Quem precisa
-              dele acha; quem está chegando é recebido primeiro.
+              São as mesmas regras da página inicial de vocês, sem tirar nenhuma: agrupadas pelo que o
+              hóspede procura — diária, café, visitas, piscinas — e escritas no tom de quem recebe. Quem
+              precisa delas acha; quem está chegando é recebido primeiro.
             </p>
           </ParaOHotel>
         </div>

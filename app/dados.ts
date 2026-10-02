@@ -12,7 +12,7 @@ import type { Foto, Tema } from './_pecas/tipos';
  *
  * Levantado do site deles em setembro de 2026 e conferido, item por
  * item, com a cópia do Arquivo da Internet de 2026 — em 1º de outubro
- * o site amanheceu suspenso pela hospedagem, fotos inclusive. O que não
+ * o site passou o dia suspenso pela hospedagem, e voltou no dia 2. O que não
  * estava publicado não está aqui: nem a capacidade do Auditório
  * Anunciação, nem estacionamento, nem forma de pagamento.
  *
