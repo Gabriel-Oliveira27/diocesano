@@ -1,0 +1,106 @@
+/* ─────────────────────────────────────────────────────────────
+   Movimento da proposta — o mesmo das propostas de restaurante.
+
+   Tudo aqui é CSS de propósito: animação que depende de JavaScript
+   para existir some quando o JavaScript atrasa, e a página fica
+   parada num estado intermediário. O único JS é o que marca o que
+   entrou na tela (movimento.ts).
+
+   Quem pediu ao sistema para reduzir movimento não vê nada disso.
+   ───────────────────────────────────────────────────────────── */
+
+@keyframes rest-surgir {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes rest-aparecer {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes rest-pulo {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.4);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes rest-zoom {
+  from {
+    transform: scale(1.08);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* A abertura entra em cascata no carregamento. */
+.rest-entrada {
+  animation: rest-surgir 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(var(--i, 0) * 90ms);
+}
+
+.rest-zoom {
+  animation: rest-zoom 1.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+/* Conteúdo abaixo da dobra sobe quando chega à tela. Começa visível:
+   só fica escondido depois que o JS confirmou que está fora da tela,
+   então sem JS nada some. */
+[data-revelar] {
+  transition:
+    opacity 0.8s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: calc(var(--i, 0) * 80ms);
+}
+[data-revelar='fora'] {
+  opacity: 0;
+  transform: translateY(28px);
+}
+
+/* O número do pedido "pula" quando muda. */
+.rest-pulo {
+  animation: rest-pulo 0.35s ease-out;
+}
+
+.rest-troca {
+  animation: rest-aparecer 0.35s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rest-entrada,
+  .rest-zoom,
+  .rest-pulo,
+  .rest-troca {
+    animation: none !important;
+  }
+  [data-revelar] {
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* Faixa rolável sem barra — as setas fazem o papel dela. */
+.rest-sem-barra {
+  scrollbar-width: none;
+}
+.rest-sem-barra::-webkit-scrollbar {
+  display: none;
+}

@@ -2,231 +2,302 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
-import { hotel, quartos, espacos, instalacoes, historia, regulamento } from './dados';
+import ComoChegar from './_pecas/ComoChegar';
+import { Destaques, Galeria } from './_pecas/Galeria';
+import { I } from './_pecas/Icones';
+import { useRevelar } from './_pecas/movimento';
+import Numero from './_pecas/Numero';
+import Orcamento from './_pecas/Orcamento';
+import ParaOHotel from './_pecas/ParaOHotel';
+import Regulamento from './_pecas/Regulamento';
+import Reserva from './_pecas/Reserva';
+import Rodape from './_pecas/Rodape';
+import { real, variaveis } from './_pecas/tipos';
+import {
+  adicionais,
+  contatos,
+  destaques,
+  espacos,
+  galeria,
+  historia,
+  horariosDaCasa,
+  hotel,
+  instalacoes,
+  quartos,
+  regulamento,
+  rodape,
+  tema,
+  tiposDeEvento,
+} from './dados';
 
 /**
  * As fotos são as DELES, tiradas da galeria do site atual.
  *
  * É a escolha certa por um motivo que é também o argumento de venda:
- * as fotos já são boas — luz natural, enquadramento, a arquitetura
- * bem resolvida — e o site atual as enterra numa galeria de 107
- * miniaturas que ninguém abre. Mostrar as fotos deles bem
- * apresentadas prova que o problema é apresentação, não matéria-prima.
+ * as fotos de fora já são boas — luz natural, enquadramento, a
+ * arquitetura bem resolvida — e o site as enterrava numa galeria de 107
+ * miniaturas. Mostrá-las bem apresentadas prova que o problema é
+ * apresentação, não matéria-prima. Banco de imagens seria pior: uma
+ * piscina linda que não é a deles cria expectativa falsa.
  *
- * Banco de imagens genérico seria pior, não melhor: uma piscina linda
- * que não é a deles cria expectativa falsa, e no dia em que alguém
- * percebe, queima a confiança que a proposta inteira quer construir.
- *
- * Limite real: 640px de largura, que é pouco para um fundo de tela
- * cheia. O véu escuro por cima resolve na prática — e pedir os
- * originais é a primeira conversa depois do "gostei".
+ * Limite real: 640px de largura. Por isso a abertura não é mais uma
+ * foto de tela cheia sob um véu — é uma foto do tamanho em que ela é
+ * nítida, ao lado do texto.
  */
 const FOTOS = {
-  passagem: '/passagem.jpg',
-  fachada: '/fachada.jpg',
-  alameda: '/alameda.jpg',
-  jardim: '/jardim.jpg',
-  apartamento: '/apartamento.jpg',
   logo: '/logo.png',
+  passagem: '/passagem.jpg',
+  jardim: '/jardim.jpg',
 };
 
-// Cliente por causa do regulamento que abre e fecha e da escolha de
-// quarto que monta a mensagem. O `metadata` mora no layout ao lado.
+// Inaugurado em dezembro de 1965: a casa faz aniversário em dezembro.
+const agora = new Date();
+const anos = agora.getFullYear() - hotel.inauguracao.ano - (agora.getMonth() + 1 < hotel.inauguracao.mes ? 1 : 0);
+const menorDiaria = Math.min(...quartos.map((q) => q.individual));
 
-const reserva = (quarto?: string) =>
-  `https://wa.me/${hotel.whatsapp}?text=` +
-  encodeURIComponent(
-    quarto
-      ? `Olá! Gostaria de verificar disponibilidade de um apartamento ${quarto} no Diocesano Hotel.`
-      : 'Olá! Gostaria de verificar disponibilidade no Diocesano Hotel.',
+function Titulo({ sobre, children, claro = false }: { sobre: string; children: React.ReactNode; claro?: boolean }) {
+  return (
+    <div data-revelar>
+      <p
+        className={`text-xs font-semibold uppercase tracking-[0.22em] ${claro ? 'text-[var(--destaque)]' : 'text-[var(--marca)]'}`}
+      >
+        {sobre}
+      </p>
+      <h2 className="mt-2 font-[family-name:var(--font-marca)] text-4xl font-semibold leading-tight lining-nums sm:text-5xl">
+        {children}
+      </h2>
+    </div>
   );
-
-const real = (v: number) => `R$ ${v},00`;
+}
 
 export default function PropostaDiocesano() {
-  const [abertoRegulamento, setAbertoRegulamento] = useState(false);
+  useRevelar();
+  // O apartamento escolhido mora aqui, e não na reserva: o "Reservar"
+  // de cada cartão leva até o formulário com ele já marcado.
+  const [apto, setApto] = useState(quartos[0].slug);
 
   return (
-    <div className="bg-[#FBF8F4] text-[#2A211C]">
+    <div style={variaveis(tema)} className="bg-[var(--fundo)] text-[var(--tinta)]">
       {/* ── Cabeçalho ───────────────────────────────────────── */}
-      <header className="sticky top-9 z-40 border-b border-[#E8DDD0] bg-[#FBF8F4]/95 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-5xl items-center gap-4 px-5">
+      <header className="sticky top-9 z-40 border-b border-[var(--borda)] bg-[var(--fundo)]/95 backdrop-blur">
+        <div className="mx-auto flex h-16 max-w-6xl items-center gap-6 px-5">
           {/* A marca deles, mostrada a eles. O reconhecimento é
               imediato e é o que faz a proposta parecer o site deles em
               vez de um site qualquer. */}
-          <Image
-            src={FOTOS.logo}
-            alt="Diocesano Hotel"
-            width={307}
-            height={58}
-            priority
-            className="h-8 w-auto shrink-0"
-          />
+          <Image src={FOTOS.logo} alt={hotel.nome} width={307} height={58} loading="eager" className="h-8 w-auto shrink-0" />
 
           <nav className="ml-auto hidden gap-6 text-sm lg:flex">
-            <a href="#quartos" className="hover:text-[#7B1E2B]">Apartamentos</a>
-            <a href="#hotel" className="hover:text-[#7B1E2B]">O hotel</a>
-            <a href="#eventos" className="hover:text-[#7B1E2B]">Eventos</a>
-            <a href="#historia" className="hover:text-[#7B1E2B]">História</a>
-            <a href="#contato" className="hover:text-[#7B1E2B]">Contato</a>
+            {[
+              ['#quartos', 'Apartamentos'],
+              ['#hotel', 'O hotel'],
+              ['#eventos', 'Eventos'],
+              ['#historia', 'História'],
+              ['#contato', 'Como chegar'],
+            ].map(([href, rotulo]) => (
+              <a
+                key={href}
+                href={href}
+                className="relative py-1 transition-colors hover:text-[var(--marca)] after:absolute after:inset-x-0 after:-bottom-0.5 after:h-px after:origin-left after:scale-x-0 after:bg-[var(--marca)] after:transition-transform hover:after:scale-x-100"
+              >
+                {rotulo}
+              </a>
+            ))}
           </nav>
 
           <a
-            href={reserva()}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="ml-auto shrink-0 rounded-lg bg-[#7B1E2B] px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 lg:ml-0"
+            href="#reservas"
+            className="ml-auto inline-flex shrink-0 items-center gap-2 bg-[var(--marca)] px-4 py-2.5 text-sm font-semibold text-[var(--sobre-marca)] transition-opacity hover:opacity-90 lg:ml-0"
           >
+            <I.calendario className="size-4" />
             Reservar
           </a>
         </div>
       </header>
 
-      {/* ── Abertura ─────────────────────────────────────────
-          O lugar que hoje é ocupado pelo regulamento. Quem chega
-          precisa saber onde está, o que é a casa e como reservar —
-          nessa ordem. As regras são importantes, mas não são
-          convite. */}
-      <section className="relative overflow-hidden border-b border-[#E8DDD0]">
-        {/* A passagem coberta, com o piso em chevron e o jardim dos
-            dois lados. É a melhor foto que eles têm e hoje está
-            perdida entre 107 miniaturas. As linhas de fuga levam o
-            olho para dentro do hotel, que é o que uma abertura
-            precisa fazer. */}
-        <Image
-          src={FOTOS.passagem}
-          alt="Passagem coberta do hotel, com jardim dos dois lados"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-        />
-        {/* Véu em duas camadas: o gradiente dá contraste ao texto e,
-            de quebra, disfarça que o original tem só 640px de
-            largura. */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#7B1E2B]/95 via-[#63202A]/90 to-[#3D1A20]/95" />
-
-        <div className="relative mx-auto max-w-5xl px-5 py-20 sm:py-28">
-          <p className="text-sm font-medium uppercase tracking-[0.2em] text-[#E8C9A0]">
-            Desde 1965 · {hotel.cidade}
-          </p>
-          <h1 className="mt-5 max-w-3xl font-serif text-4xl leading-[1.1] text-white sm:text-6xl">
-            Uma casa de hospedagem com sessenta anos de história no centro de Iguatu.
-          </h1>
-          <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/75">
-            Quartos climatizados, café da manhã incluso, piscinas, restaurante e capela. O
-            conforto de um hotel de padrão com a tranquilidade de quem recebe visita há
-            três gerações.
-          </p>
-
-          <div className="mt-9 flex flex-wrap gap-3">
-            <a
-              href={reserva()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-xl bg-white px-6 py-3.5 font-semibold text-[#7B1E2B] transition-opacity hover:opacity-90"
+      {/* ── Abertura ───────────────────────────────────────────
+          O lugar que no site antigo era do regulamento. A frase é
+          deles — era a chamada do carrossel da página inicial. Quem
+          chega precisa saber onde está, o que é a casa e como reservar,
+          nessa ordem. */}
+      <section className="relative overflow-hidden bg-[var(--marca-escura)] text-white">
+        <div aria-hidden className="absolute inset-0 bg-gradient-to-br from-[var(--marca)]/70 via-[var(--marca)]/15 to-transparent" />
+        <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 py-14 lg:grid-cols-[1fr_1.05fr] lg:py-20">
+          <div>
+            <p
+              className="rest-entrada text-sm font-medium uppercase tracking-[0.22em] text-[var(--destaque)]"
+              style={{ '--i': 0 } as React.CSSProperties}
             >
-              Verificar disponibilidade
-            </a>
-            <a
-              href="#quartos"
-              className="rounded-xl border border-white/30 px-6 py-3.5 font-semibold text-white transition-colors hover:border-white/70"
+              Desde 1965 · Iguatu — CE
+            </p>
+
+            <h1
+              className="rest-entrada mt-5 font-[family-name:var(--font-marca)] text-5xl font-semibold leading-[1.02] sm:text-7xl"
+              style={{ '--i': 1 } as React.CSSProperties}
             >
-              Ver apartamentos
-            </a>
+              {hotel.chamada}.
+            </h1>
+            <p
+              className="rest-entrada mt-6 max-w-xl text-lg leading-relaxed text-white/75"
+              style={{ '--i': 2 } as React.CSSProperties}
+            >
+              Hospedagem no Centro de Treinamento Diocesano, no bairro Planalto: uma casa de {anos} anos
+              com jardins, a Capela São José, piscinas e café da manhã incluso na diária.
+            </p>
+
+            <div className="rest-entrada mt-8 flex flex-wrap gap-3" style={{ '--i': 3 } as React.CSSProperties}>
+              <a
+                href="#reservas"
+                className="inline-flex items-center gap-2 bg-white px-6 py-3.5 font-semibold text-[var(--marca)] transition-transform hover:-translate-y-0.5"
+              >
+                <I.calendario className="size-4" />
+                Verificar disponibilidade
+              </a>
+              <a
+                href="#quartos"
+                className="inline-flex items-center gap-2 border border-white/30 px-6 py-3.5 font-semibold transition-colors hover:border-white/70"
+              >
+                <I.cama className="size-4" />
+                Ver apartamentos
+              </a>
+            </div>
+
+            <dl
+              className="rest-entrada mt-12 grid max-w-xl grid-cols-2 gap-6 border-t border-white/15 pt-7 sm:grid-cols-4"
+              style={{ '--i': 4 } as React.CSSProperties}
+            >
+              {(
+                [
+                  ['De casa', <Numero key="n" valor={anos} />, 'anos'],
+                  ['Diária desde', <span key="n">R$ <Numero valor={menorDiaria} /></span>, ''],
+                  ['Auditório', <Numero key="n" valor={450} />, 'lugares'],
+                  ['Na diária', 'café', 'incluso'],
+                ] as const
+              ).map(([r, v, unidade]) => (
+                <div key={r}>
+                  <dt className="text-[11px] uppercase tracking-wider text-white/50">{r}</dt>
+                  <dd className="mt-1 whitespace-nowrap font-[family-name:var(--font-marca)] text-3xl font-semibold leading-none text-[var(--destaque)]">
+                    {v}
+                    {unidade && <span className="ml-1.5 font-[family-name:var(--font-texto)] text-xs font-normal text-white/60">{unidade}</span>}
+                  </dd>
+                </div>
+              ))}
+            </dl>
           </div>
 
-          <dl className="mt-14 grid max-w-2xl grid-cols-2 gap-6 border-t border-white/15 pt-7 sm:grid-cols-4">
-            {[
-              ['A partir de', 'R$ 79'],
-              ['Café da manhã', 'incluso'],
-              ['Auditório', '450 lugares'],
-              ['Piscinas', '7h às 22h'],
-            ].map(([r, v]) => (
-              <div key={r}>
-                <dt className="text-[11px] uppercase tracking-wider text-white/50">{r}</dt>
-                <dd className="mt-1 font-serif text-xl text-[#E8C9A0]">{v}</dd>
-              </div>
-            ))}
-          </dl>
+          {/* A passagem coberta: piso em zigue-zague, pilares no
+              vermelho da marca e o jardim dos dois lados — é a melhor
+              foto que eles têm. O jardim com as esculturas entra por
+              cima, no canto: é a identidade da casa, e nenhuma das duas
+              aguentaria a tela cheia com 640px. */}
+          <figure className="rest-entrada relative mx-auto w-full max-w-xl" style={{ '--i': 2 } as React.CSSProperties}>
+            <div className="relative aspect-[3/2] overflow-hidden shadow-2xl shadow-black/40 ring-1 ring-white/10">
+              <Image
+                src={FOTOS.passagem}
+                alt="Passagem coberta do hotel, com piso em zigue-zague e jardim dos dois lados"
+                fill
+                preload
+                sizes="(min-width: 1024px) 36rem, 100vw"
+                className="rest-zoom object-cover"
+              />
+            </div>
+            <div className="absolute -bottom-10 -left-5 hidden aspect-[4/3] w-52 overflow-hidden shadow-xl shadow-black/40 ring-4 ring-[var(--marca-escura)] sm:block">
+              <Image src={FOTOS.jardim} alt="Esculturas no jardim florido" fill sizes="13rem" className="object-cover" />
+            </div>
+          </figure>
         </div>
       </section>
 
+      {/* ── O que tem no hotel ───────────────────────────────── */}
+      <section className="border-b border-[var(--borda)]">
+        <div className="mx-auto max-w-6xl">
+          <Destaques itens={destaques} />
+        </div>
+      </section>
+
+      <div className="mx-auto max-w-6xl px-5 pt-14">
+        <ParaOHotel titulo="Hoje, quem abre o site de vocês encontra “Site suspenso”">
+          <p>
+            Quando terminei esta página, em 1º de outubro de 2026, o endereço <b>diocesanohotel.com.br</b>{' '}
+            — e cada foto dele — abria uma página da empresa de hospedagem:{' '}
+            <b>“Este site está suspenso temporariamente”</b>. Pode ser só uma pendência com a hospedagem;
+            mas, enquanto durar, é isso que aparece para quem procura o hotel no Google.
+          </p>
+          <p>
+            Não foi a primeira vez: o Arquivo da Internet guardou essa mesma página de suspensão em março
+            de 2022. Nada do conteúdo se perdeu — diárias, apartamentos, auditórios, história e
+            regulamento estão todos aqui, conferidos com a última versão salva do site.
+          </p>
+        </ParaOHotel>
+      </div>
+
       {/* ── Apartamentos ─────────────────────────────────────
-          Os preços em TEXTO. Hoje eles vivem dentro de um JPEG: o
-          Google não indexa, leitor de tela não lê, no celular fica
-          ilegível, e trocar um valor exige editor de imagem. */}
-      <section id="quartos" className="mx-auto max-w-5xl px-5 py-20">
-        <h2 className="font-serif text-3xl sm:text-4xl">Apartamentos</h2>
-        <p className="mt-2 max-w-xl text-[#6B5A4E]">
-          Todas as diárias incluem café da manhã, servido das 6h às 9h30. A diária é de 24
-          horas e começa ao meio-dia.
-        </p>
+          Os preços em TEXTO. No site eles viviam dentro de um JPEG. */}
+      <section id="quartos" className="mx-auto max-w-6xl scroll-mt-28 px-5 py-16">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <Titulo sobre="Apartamentos">Quatro jeitos de ficar.</Titulo>
+          <p data-revelar className="max-w-sm text-[var(--tinta-media)]">
+            Todos com ar central, Wi-Fi e café da manhã incluso. A diária vai do meio-dia ao meio-dia.
+          </p>
+        </div>
 
-        <figure className="mt-8 overflow-hidden rounded-2xl">
-          <div className="relative aspect-[16/7]">
-            <Image
-              src={FOTOS.apartamento}
-              alt="Apartamento com duas camas, mesa de trabalho e frigobar"
-              fill
-              sizes="(min-width: 1024px) 64rem, 100vw"
-              className="object-cover"
-            />
-          </div>
-        </figure>
-
-        <div className="mt-8 grid gap-4 sm:grid-cols-2">
-          {quartos.map((q) => (
+        <div className="mt-8 grid gap-px border border-[var(--borda)] bg-[var(--borda)] sm:grid-cols-2">
+          {quartos.map((q, i) => (
             <article
               key={q.slug}
-              className={`flex flex-col rounded-2xl border bg-white p-5 transition-shadow hover:shadow-lg sm:p-6 ${
-                q.destaque ? 'border-[#7B1E2B]/30' : 'border-[#E8DDD0]'
-              }`}
+              data-revelar
+              style={{ '--i': i } as React.CSSProperties}
+              className="group relative flex flex-col bg-[var(--papel)] p-6 transition-colors hover:bg-[var(--fundo)] sm:p-7"
             >
+              {/* Um filete da cor da marca corre no topo ao passar o
+                  mouse — sinal de que o cartão é clicável, sem sombra
+                  nem canto arredondado. */}
+              <span
+                aria-hidden
+                className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-[var(--marca)] transition-transform duration-500 group-hover:scale-x-100"
+              />
               <div className="flex items-start gap-3">
-                <div className="min-w-0">
-                  <h3 className="font-serif text-2xl leading-none">{q.nome}</h3>
-                  <p className="mt-1.5 text-sm text-[#6B5A4E]">{q.resumo}</p>
-                </div>
+                <h3 className="font-[family-name:var(--font-marca)] text-3xl font-semibold leading-none">{q.nome}</h3>
                 {q.destaque && (
-                  <span className="shrink-0 rounded-md bg-[#7B1E2B]/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-[#7B1E2B]">
-                    mais procurado
+                  <span className="ml-auto shrink-0 border-l-2 border-[var(--marca)] bg-[var(--areia)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--marca)]">
+                    O mais completo
                   </span>
                 )}
               </div>
+              <p className="mt-2 text-sm text-[var(--tinta-media)]">{q.resumo}</p>
 
-              <ul className="mt-4 flex flex-wrap gap-1.5">
-                {q.itens.map((i) => (
-                  <li
-                    key={i}
-                    className="rounded-md bg-[#F4EDE4] px-2 py-1 text-[11px] text-[#6B5A4E]"
-                  >
-                    {i}
-                  </li>
-                ))}
+              <ul className="mt-5 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                {q.itens.map((item) => {
+                  const Icone = I[item.icone];
+                  return (
+                    <li key={item.texto} className="flex items-center gap-2">
+                      <Icone className="size-4 shrink-0 text-[var(--marca)]" />
+                      {item.texto}
+                    </li>
+                  );
+                })}
               </ul>
 
-              {/* Envolve em vez de espremer. Dois preços em serifa mais
-                  o botão somam mais que a largura de um cartão em tela
-                  estreita — sem `flex-wrap` a página inteira ganhava
-                  rolagem horizontal. */}
-              <div className="mt-5 flex flex-wrap items-end gap-x-5 gap-y-3 border-t border-[#E8DDD0] pt-4">
-                <div>
-                  <p className="text-[11px] uppercase tracking-wider text-[#9A8878]">Individual</p>
-                  <p className="font-serif text-2xl leading-none text-[#7B1E2B]">
-                    {real(q.individual)}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-[11px] uppercase tracking-wider text-[#9A8878]">Duplo</p>
-                  <p className="font-serif text-2xl leading-none text-[#7B1E2B]">{real(q.duplo)}</p>
-                </div>
+              <div className="flex-1" />
+
+              {/* Envolve em vez de espremer: dois preços mais o botão
+                  somam mais que a largura de um cartão em tela estreita. */}
+              <div className="mt-6 flex flex-wrap items-end gap-x-6 gap-y-3 border-t border-[var(--borda)] pt-5">
+                {(['individual', 'duplo'] as const).map((o) => (
+                  <div key={o}>
+                    <p className="text-[11px] uppercase tracking-wider text-[var(--tinta-fraca)]">
+                      {o === 'individual' ? 'Individual' : 'Duplo'}
+                    </p>
+                    <p className="font-[family-name:var(--font-marca)] text-3xl font-semibold leading-none text-[var(--marca)] lining-nums">
+                      {real(q[o])}
+                    </p>
+                  </div>
+                ))}
                 <a
-                  href={reserva(q.nome)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="ml-auto shrink-0 rounded-lg border border-[#7B1E2B] px-3.5 py-2 text-sm font-semibold text-[#7B1E2B] transition-colors hover:bg-[#7B1E2B] hover:text-white"
+                  href="#reservas"
+                  onClick={() => setApto(q.slug)}
+                  className="ml-auto inline-flex items-center gap-2 border border-[var(--marca)] px-4 py-2.5 text-sm font-semibold text-[var(--marca)] transition-colors hover:bg-[var(--marca)] hover:text-white"
                 >
+                  <I.calendario className="size-4" />
                   Reservar
                 </a>
               </div>
@@ -234,261 +305,235 @@ export default function PropostaDiocesano() {
           ))}
         </div>
 
-        <p className="mt-5 text-sm text-[#9A8878]">
-          Apartamento quádruplo e criança de 5 a 10 anos: adicional de R$ 40 por diária.
-          Pet: R$ 25 por diária.
+        <p data-revelar className="mt-5 flex flex-wrap gap-x-8 gap-y-2 text-sm text-[var(--tinta-media)]">
+          <span className="flex items-center gap-2">
+            <I.balao className="size-4 text-[var(--marca)]" />
+            Apartamento quádruplo e criança de 5 a 10 anos: + {real(adicionais.criancaOuQuadruplo)} por diária
+          </span>
+          <span className="flex items-center gap-2">
+            <I.pata className="size-4 text-[var(--marca)]" />
+            Pet: + {real(adicionais.pet)} por diária
+          </span>
         </p>
 
-        {/* Observação dirigida ao HOTEL, não ao hóspede — some quando
-            o site for para valer. Está aqui porque é o achado mais
-            útil do levantamento e esconder seria desperdiçar: as
-            fotos de área externa deles são ótimas, e são justamente
-            as de quarto que decidem reserva. */}
-        <aside className="mt-10 rounded-2xl border border-dashed border-[#C9A227] bg-[#FDF8EC] p-5">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-[#8A6D1B]">
-            Observação para o hotel · não aparece no site final
-          </p>
-          <p className="mt-2 leading-relaxed text-[#6B5A4E]">
-            Todas as fotos desta página são de vocês, tiradas da galeria do site atual. As de
-            área externa, jardim e arquitetura são muito boas — luz natural, enquadramento
-            pensado — e hoje estão perdidas numa galeria de mais de cem miniaturas que
-            ninguém abre.
-          </p>
-          <p className="mt-2.5 leading-relaxed text-[#6B5A4E]">
-            As de <b>apartamento</b> são o ponto fraco, e são justamente as que decidem uma
-            reserva. Uma manhã de fotos com a cama arrumada, cortina aberta e luz natural
-            resolveria — e é a única coisa desta proposta que eu não consigo fazer sozinho
-            daqui.
-          </p>
-        </aside>
+        <div className="mt-10">
+          <ParaOHotel titulo="As diárias de vocês estavam dentro de uma imagem">
+            <p>
+              No site, a tabela de preços era uma foto. O Google não lê o que está dentro de uma imagem,
+              leitor de tela também não, no celular ela ficava pequena demais para ler — e mudar um valor
+              exigia editor de imagem.
+            </p>
+            <p>
+              Aqui as diárias são texto: trocar um preço é trocar um número. E a reserva logo abaixo já
+              calcula a estadia pela tabela, para o hóspede saber o valor antes de perguntar.
+            </p>
+          </ParaOHotel>
+        </div>
       </section>
 
-      {/* ── O hotel ──────────────────────────────────────────── */}
-      <section id="hotel" className="border-y border-[#E8DDD0] bg-[#F4EDE4]">
-        <div className="mx-auto max-w-5xl px-5 py-20">
-          <h2 className="font-serif text-3xl sm:text-4xl">A casa</h2>
-          <p className="mt-2 max-w-xl text-[#6B5A4E]">
-            O hotel ocupa parte do Centro de Treinamento Diocesano — um complexo de jardins,
-            salões e capela, no bairro Planalto.
+      {/* ── Reservas ──────────────────────────────────────── */}
+      <section id="reservas" className="scroll-mt-28 border-y border-[var(--borda)] bg-[var(--areia)]">
+        <div className="mx-auto max-w-6xl px-5 py-16">
+          <Titulo sobre="Reservas">Verifique a disponibilidade.</Titulo>
+          <p data-revelar className="mt-3 max-w-2xl text-lg text-[var(--tinta-media)]">
+            Escolha as datas e o apartamento. O pedido chega completo no WhatsApp da recepção, já com o
+            valor pela tabela, e a confirmação volta por lá.
           </p>
 
-          {/* Três fotos grandes no lugar da galeria de 107 miniaturas.
-              Menos imagens, maiores, escolhidas — é o que faz alguém
-              parar e olhar. */}
-          <div className="mt-10 grid gap-3 sm:grid-cols-3">
-            {[
-              { src: FOTOS.fachada, alt: 'Fachada do Diocesano Hotel', legenda: 'A entrada, no bairro Planalto' },
-              { src: FOTOS.alameda, alt: 'Alameda lateral do complexo, com palmeiras', legenda: 'A alameda interna' },
-              { src: FOTOS.jardim, alt: 'Estátuas e jardim florido do complexo', legenda: 'Os jardins' },
-            ].map((f) => (
-              <figure key={f.src} className="overflow-hidden rounded-2xl bg-[#E8DDD0]">
-                <div className="relative aspect-[4/3]">
-                  <Image
-                    src={f.src}
-                    alt={f.alt}
-                    fill
-                    sizes="(min-width: 640px) 33vw, 100vw"
-                    className="object-cover transition-transform duration-500 hover:scale-105"
-                  />
-                </div>
-                <figcaption className="bg-white px-4 py-2.5 text-sm text-[#6B5A4E]">
-                  {f.legenda}
-                </figcaption>
-              </figure>
-            ))}
+          <div data-revelar className="mt-8">
+            <Reserva
+              hotel={hotel.nome}
+              numeroWhatsApp={hotel.whatsapp}
+              apartamentos={quartos}
+              escolhido={apto}
+              escolhe={setApto}
+              adicional={adicionais.criancaOuQuadruplo}
+              pet={adicionais.pet}
+            />
           </div>
+        </div>
+      </section>
 
-          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {instalacoes.map((i) => (
-              <div key={i.nome} className="rounded-2xl border border-[#E0D3C2] bg-white p-5">
-                <h3 className="font-serif text-xl">{i.nome}</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-[#6B5A4E]">{i.texto}</p>
-              </div>
-            ))}
-          </div>
+      {/* ── O hotel ─────────────────────────────────────────── */}
+      <section id="hotel" className="mx-auto max-w-6xl scroll-mt-28 px-5 py-16">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <Titulo sobre="O hotel">Uma casa com jardim, capela e piscina.</Titulo>
+          <p data-revelar className="max-w-sm text-[var(--tinta-media)]">
+            O hotel ocupa parte do Centro de Treinamento Diocesano, no bairro Planalto. Toque numa foto
+            para ver em tela cheia.
+          </p>
+        </div>
+
+        <div className="mt-8">
+          <Galeria fotos={galeria} />
+        </div>
+
+        <div className="mt-10 border border-[var(--borda)]">
+          <Destaques itens={instalacoes} colunas="sm:grid-cols-2 lg:grid-cols-3" />
+        </div>
+
+        <div className="mt-10">
+          <ParaOHotel titulo="As fotos são de vocês — e as de fora são ótimas">
+            <p>
+              Todas as fotos desta página saíram da galeria do site de vocês. As de área externa, jardim e
+              arquitetura têm luz natural e enquadramento pensado; no site, estavam perdidas entre mais
+              de cem miniaturas.
+            </p>
+            <p>
+              As de <b>apartamento</b> são o ponto fraco — e são justamente as que decidem uma reserva. Uma
+              manhã de fotos com a cama arrumada, a cortina aberta e luz natural resolve. E, se houver as
+              originais em tamanho maior (as do site têm 640 pixels de largura), a página inteira fica
+              mais nítida.
+            </p>
+          </ParaOHotel>
         </div>
       </section>
 
       {/* ── Eventos ──────────────────────────────────────────
-          Separado dos quartos de propósito: quem procura auditório
-          para um congresso não é a mesma pessoa que procura cama, e
-          hoje as duas coisas dividem o mesmo menu confuso. */}
-      <section id="eventos" className="mx-auto max-w-5xl px-5 py-20">
-        <h2 className="font-serif text-3xl sm:text-4xl">Eventos e formações</h2>
-        <p className="mt-2 max-w-2xl text-[#6B5A4E]">
-          O Centro nasceu para receber encontros, e continua sendo referência em Iguatu para
-          congresso, curso, palestra e reunião de equipe. Todas as áreas climatizadas e com
-          internet.
-        </p>
+          Faixa própria, de outra cor: quem procura auditório para um
+          congresso não é a mesma pessoa que procura cama, e no site
+          antigo as duas coisas dividiam o mesmo menu. */}
+      <section id="eventos" className="scroll-mt-28 bg-[var(--marca-escura)] text-white">
+        <div className="mx-auto max-w-6xl px-5 py-16">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <Titulo sobre="Eventos e formações" claro>
+              Um auditório para 450 pessoas.
+            </Titulo>
+            <p data-revelar className="max-w-md text-white/70">
+              O Centro nasceu para receber encontros de formação, e os espaços dele recebem congresso,
+              curso, palestra e reunião — com hospedagem no mesmo lugar.
+            </p>
+          </div>
 
-        <div className="mt-10 grid gap-4 sm:grid-cols-3">
-          {espacos.map((e) => (
-            <article key={e.nome} className="flex flex-col rounded-2xl border border-[#E8DDD0] bg-white p-5">
-              <h3 className="font-serif text-xl leading-snug">{e.nome}</h3>
-              <p className="mt-1 text-sm font-medium text-[#7B1E2B]">{e.capacidade}</p>
-              <p className="mt-2.5 flex-1 text-sm leading-relaxed text-[#6B5A4E]">{e.texto}</p>
-              <p className="mt-4 border-t border-[#E8DDD0] pt-3 text-sm">
-                <span className="text-[#9A8878]">Valor: </span>
-                <span className="font-semibold">{e.preco}</span>
+          <div className="mt-10 grid gap-px bg-white/10 lg:grid-cols-[1.4fr_1fr_1fr]">
+            {espacos.map((e, i) => (
+              <article
+                key={e.slug}
+                data-revelar
+                style={{ '--i': i } as React.CSSProperties}
+                className="flex flex-col bg-[var(--marca-escura)] p-6"
+              >
+                <h3 className="font-[family-name:var(--font-marca)] text-2xl font-semibold">{e.nome}</h3>
+                {e.capacidade && (
+                  <p className="mt-3 font-[family-name:var(--font-marca)] text-6xl font-semibold leading-none text-[var(--destaque)] lining-nums">
+                    <Numero valor={e.capacidade} />
+                    <span className="ml-2 font-[family-name:var(--font-texto)] text-sm font-normal text-white/60">pessoas</span>
+                  </p>
+                )}
+                <p className="mt-3 text-sm text-white/70">{e.texto}</p>
+                <ul className="mt-4 space-y-2 text-sm text-white/85">
+                  {e.itens.map((item) => {
+                    const Icone = I[item.icone];
+                    return (
+                      <li key={item.texto} className="flex gap-2.5">
+                        <Icone className="mt-0.5 size-4 shrink-0 text-[var(--destaque)]" />
+                        {item.texto}
+                      </li>
+                    );
+                  })}
+                </ul>
+                <p className="mt-auto pt-6 text-sm">
+                  <span className="text-white/50">Valor: </span>
+                  <span className="font-semibold">{e.porHora ? `${real(e.porHora)} por hora` : 'sob consulta'}</span>
+                </p>
+              </article>
+            ))}
+          </div>
+
+          <div data-revelar className="mt-10">
+            <Orcamento hotel={hotel.nome} numeroWhatsApp={hotel.whatsapp} espacos={espacos} tipos={tiposDeEvento} />
+          </div>
+
+          <div className="mt-10">
+            <ParaOHotel titulo="Hospedagem e eventos, cada um no seu lugar">
+              <p>
+                No site, cada auditório era uma página no mesmo menu dos apartamentos. Quem procura
+                auditório para um congresso não é quem procura cama: aqui os eventos têm faixa e pedido de
+                orçamento próprios, e o pedido chega com espaço, data, pessoas, horas e se vai precisar de
+                hospedagem — que é onde as duas frentes do hotel se encontram.
               </p>
-            </article>
-          ))}
+              <p>
+                A capacidade e o valor do Auditório Anunciação e da sala de reuniões não estavam
+                publicados. Entram quando vocês quiserem.
+              </p>
+            </ParaOHotel>
+          </div>
         </div>
-
-        <a
-          href={`https://wa.me/${hotel.whatsapp}?text=${encodeURIComponent('Olá! Gostaria de um orçamento para evento no Diocesano Hotel.')}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-7 inline-block rounded-xl bg-[#7B1E2B] px-6 py-3.5 font-semibold text-white transition-opacity hover:opacity-90"
-        >
-          Pedir orçamento para evento
-        </a>
       </section>
 
       {/* ── História ─────────────────────────────────────────
-          Hoje isso está numa aba interna chamada "Sobre". É o maior
-          ativo do hotel e o que nenhum concorrente da cidade tem. */}
-      <section id="historia" className="border-y border-[#E8DDD0] bg-[#F4EDE4]">
-        <div className="mx-auto max-w-4xl px-5 py-20">
-          <h2 className="font-serif text-3xl sm:text-4xl">Sessenta anos</h2>
+          No site, ela morava numa aba interna chamada "Sobre". É o
+          maior ativo do hotel e explica tudo o que ele tem. */}
+      <section id="historia" className="scroll-mt-28 border-b border-[var(--borda)] bg-[var(--areia)]">
+        <div className="mx-auto grid max-w-6xl gap-12 px-5 py-16 lg:grid-cols-[1fr_1.3fr]">
+          <div className="lg:sticky lg:top-32 lg:self-start">
+            <Titulo sobre="História">{anos} anos de casa.</Titulo>
+            <p data-revelar className="mt-4 text-lg leading-relaxed text-[var(--tinta-media)]">
+              O hotel nasceu dentro de um centro de formação da Diocese de Iguatu. É por isso que tem
+              capela, auditório e jardins para caminhar.
+            </p>
+            <figure data-revelar className="mt-8 border-l-2 border-[var(--marca)] pl-6">
+              <blockquote className="font-[family-name:var(--font-marca)] text-3xl italic text-[var(--marca)]">
+                {hotel.lema}
+              </blockquote>
+              <figcaption className="mt-1.5 text-sm text-[var(--tinta-fraca)]">
+                “{hotel.lemaTraduzido}” — lema de Dom Edson de Castro Homem
+              </figcaption>
+            </figure>
+          </div>
 
-          <ol className="mt-10 space-y-8 border-l-2 border-[#DCCBB6] pl-7">
-            {historia.map((h) => (
-              <li key={h.ano} className="relative">
-                <span className="absolute -left-[2.2rem] top-1 size-3.5 rounded-full border-2 border-[#F4EDE4] bg-[#7B1E2B]" />
-                <p className="font-serif text-2xl text-[#7B1E2B]">{h.ano}</p>
-                <h3 className="mt-0.5 font-semibold">{h.titulo}</h3>
-                <p className="mt-1 leading-relaxed text-[#6B5A4E]">{h.texto}</p>
+          <ol className="space-y-10 border-l border-[var(--tinta-fraca)]/40 pl-8">
+            {historia.map((h, i) => (
+              <li key={h.ano} data-revelar style={{ '--i': i } as React.CSSProperties} className="relative">
+                <span
+                  aria-hidden
+                  className="absolute -left-[2.45rem] top-3 size-3 rotate-45 bg-[var(--marca)] ring-4 ring-[var(--areia)]"
+                />
+                <p className="font-[family-name:var(--font-marca)] text-5xl font-semibold leading-none text-[var(--marca)] lining-nums">
+                  {h.ano}
+                </p>
+                <h3 className="mt-2 font-semibold">{h.titulo}</h3>
+                <p className="mt-1 leading-relaxed text-[var(--tinta-media)]">{h.texto}</p>
               </li>
             ))}
           </ol>
-
-          <figure className="mt-12 border-l-2 border-[#7B1E2B] pl-6">
-            <blockquote className="font-serif text-2xl italic text-[#7B1E2B]">
-              {hotel.lema}
-            </blockquote>
-            <figcaption className="mt-1.5 text-sm text-[#9A8878]">
-              “{hotel.lemaTraduzido}” — lema de Dom Edson de Castro Homem
-            </figcaption>
-          </figure>
         </div>
       </section>
 
-      {/* ── Contato ──────────────────────────────────────────── */}
-      <section id="contato" className="mx-auto max-w-5xl px-5 py-20">
-        <div className="grid gap-10 sm:grid-cols-2">
-          <div>
-            <h2 className="font-serif text-3xl sm:text-4xl">Onde estamos</h2>
-            <address className="mt-5 not-italic leading-relaxed text-[#6B5A4E]">
-              {hotel.endereco}
-              <br />
-              {hotel.cep} — {hotel.cidade}
-            </address>
-
-            <dl className="mt-6 space-y-2 text-sm">
-              <div className="flex gap-3">
-                <dt className="w-20 shrink-0 text-[#9A8878]">Telefone</dt>
-                <dd className="font-medium">{hotel.telefone}</dd>
-              </div>
-              <div className="flex gap-3">
-                <dt className="w-20 shrink-0 text-[#9A8878]">WhatsApp</dt>
-                <dd className="font-medium">{hotel.celular}</dd>
-              </div>
-              <div className="flex gap-3">
-                <dt className="w-20 shrink-0 text-[#9A8878]">E-mail</dt>
-                <dd className="break-all font-medium">{hotel.email}</dd>
-              </div>
-            </dl>
-
-            <div className="mt-6 flex gap-3">
-              <a
-                href={hotel.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-lg border border-[#E0D3C2] px-3.5 py-2 text-sm transition-colors hover:border-[#7B1E2B] hover:text-[#7B1E2B]"
-              >
-                Instagram
-              </a>
-              <a
-                href={hotel.facebook}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-lg border border-[#E0D3C2] px-3.5 py-2 text-sm transition-colors hover:border-[#7B1E2B] hover:text-[#7B1E2B]"
-              >
-                Facebook
-              </a>
-            </div>
-          </div>
-
-          <div className="rounded-2xl bg-[#7B1E2B] p-7 text-white">
-            <h3 className="font-serif text-2xl">Reservar é uma conversa</h3>
-            <p className="mt-2.5 leading-relaxed text-white/75">
-              Fale direto com a recepção pelo WhatsApp. Diga a data e quantas pessoas, e a
-              gente confirma a disponibilidade na hora.
-            </p>
-            <a
-              href={reserva()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-6 inline-block rounded-xl bg-white px-6 py-3.5 font-semibold text-[#7B1E2B] transition-opacity hover:opacity-90"
-            >
-              Chamar no WhatsApp
-            </a>
-            <p className="mt-3 text-sm text-white/60">{hotel.celular}</p>
-          </div>
+      {/* ── Como chegar ───────────────────────────────────── */}
+      <section id="contato" className="mx-auto max-w-6xl scroll-mt-28 px-5 py-16">
+        <Titulo sobre="Como chegar">No bairro Planalto, em Iguatu.</Titulo>
+        <div className="mt-8">
+          <ComoChegar
+            nome={hotel.nome}
+            endereco={hotel.endereco}
+            consulta={hotel.consultaMapa}
+            horarios={horariosDaCasa}
+            contatos={contatos}
+          />
         </div>
       </section>
 
       {/* ── Regulamento ──────────────────────────────────────
-          Onde uma regra deve ficar: disponível, e não na entrada.
-          Hoje é a primeira coisa que o site mostra. */}
-      <section className="border-t border-[#E8DDD0] bg-[#F4EDE4]">
-        <div className="mx-auto max-w-4xl px-5 py-12">
-          <button
-            onClick={() => setAbertoRegulamento((a) => !a)}
-            aria-expanded={abertoRegulamento}
-            className="flex w-full items-center gap-3 text-left"
-          >
-            <span className="font-serif text-xl">Regulamento para hóspedes</span>
-            <span
-              className={`ml-auto text-[#7B1E2B] transition-transform ${
-                abertoRegulamento ? 'rotate-45' : ''
-              }`}
-            >
-              +
-            </span>
-          </button>
+          Onde uma regra deve ficar: disponível, e não na entrada. */}
+      <section id="regulamento" className="scroll-mt-28 border-t border-[var(--borda)] bg-[var(--areia)]">
+        <div className="mx-auto max-w-6xl space-y-8 px-5 py-14">
+          <div data-revelar>
+            <Regulamento grupos={regulamento} />
+          </div>
 
-          {abertoRegulamento && (
-            <ul className="mt-5 space-y-2.5 text-sm leading-relaxed text-[#6B5A4E]">
-              {regulamento.map((r) => (
-                <li key={r} className="flex gap-3">
-                  <span className="mt-2 size-1.5 shrink-0 rounded-full bg-[#C9A227]" />
-                  {r}
-                </li>
-              ))}
-            </ul>
-          )}
+          <ParaOHotel titulo="O regulamento continua — depois do convite">
+            <p>
+              No site, o texto principal da página de entrada era o regulamento interno, com “é
+              expressamente proibido lavar e passar roupa nos apartamentos” em caixa alta. Aqui ele está
+              inteiro, organizado por assunto e no tom de quem recebe — mas no fim da página. Quem precisa
+              dele acha; quem está chegando é recebido primeiro.
+            </p>
+          </ParaOHotel>
         </div>
       </section>
 
-      <footer className="mx-auto max-w-5xl px-5 py-10 text-sm text-[#9A8878]">
-        <p>
-          {hotel.nome} · {hotel.cidade}
-        </p>
-        <p className="mt-1.5">
-          Esta é uma proposta de redesenho, não o site oficial. O site atual está em{' '}
-          <a
-            href={hotel.siteAtual}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline underline-offset-2 hover:text-[#7B1E2B]"
-          >
-            diocesanohotel.com.br
-          </a>
-          .
-        </p>
-      </footer>
+      <Rodape d={rodape} />
     </div>
   );
 }

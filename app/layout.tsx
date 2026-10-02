@@ -1,8 +1,19 @@
 import type { Metadata } from 'next';
-import { Geist } from 'next/font/google';
+import { Cormorant_Garamond, Geist } from 'next/font/google';
 import './globals.css';
+import './_pecas/estilos.css';
 
 const texto = Geist({ variable: '--font-texto', subsets: ['latin'] });
+
+// Garamond de traço fino e contraste alto — conversa com as maiúsculas
+// serifadas da logo e com o "D" de pena, sem imitar a letra dela. Dá o
+// ar de casa antiga e de igreja sem cair no gótico.
+const marca = Cormorant_Garamond({
+  variable: '--font-marca',
+  subsets: ['latin'],
+  weight: ['500', '600', '700'],
+  style: ['normal', 'italic'],
+});
 
 export const metadata: Metadata = {
   // O painel do Prospecta procura este título no HTML para dizer se a
@@ -31,7 +42,7 @@ const FALAR_COM_O_AUTOR =
  */
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className={texto.variable}>
+    <html lang="pt-BR" className={`${texto.variable} ${marca.variable}`}>
       <body className="min-h-dvh bg-white font-[family-name:var(--font-texto)] text-zinc-900 antialiased">
         <div className="sticky top-0 z-50 flex h-9 items-center gap-3 border-b border-sky-300/60 bg-sky-50 px-3 text-[13px] text-sky-900 sm:px-4">
           <span className="shrink-0 font-semibold">Proposta de redesenho</span>
